@@ -1,69 +1,53 @@
-Hospital Staff Management System in Dart
-Introduction
+# Hospital Management System
 
-This project implements a Staff Management System for a hospital using Dart and Object-Oriented Programming (OOP) principles.
+A simple hospital management system implemented in Dart that demonstrates object-oriented programming concepts including inheritance, encapsulation, and class relationships.
 
-The system manages hospital staff including doctors, nurses, and administrative personnel.
+## Overview
 
-Objectives
+This system models a basic hospital structure with staff members (doctors and nurses) and patients. It provides functionality to manage doctors, nurses, and patients within a hospital.
 
-Manage hospital staff efficiently using OOP concepts.
+## Class Structure
 
-Apply a layered architecture: Domain, Data, UI.
+### Staff (Base Class)
+The parent class for all hospital staff members.
 
-Demonstrate basic software engineering practices in Dart.
+**Properties:**
+- `id` - Unique identifier for the staff member
+- `name` - Staff member's name
+- `salary` - Staff member's salary
 
-Features
+### Doctor (extends Staff)
+Represents doctors in the hospital.
 
-Staff Management
+**Additional Properties:**
+- `specialization` - The doctor's area of medical expertise
 
-Add, remove, and list hospital staff.
+### Nurse (extends Staff)
+Represents nurses in the hospital.
 
-Track staff details:
+Inherits all properties from the Staff class without additional fields.
 
-id
+### Patient
+Represents patients receiving care at the hospital.
 
-name
+**Properties:**
+- `id` - Unique identifier for the patient
+- `name` - Patient's name
+- `disease` - Patient's condition or diagnosis
+- `assignedDoctor` - The doctor assigned to this patient (optional)
 
-role (Doctor, Nurse, Admin)
+### Hospital
+The main class that manages the hospital operations.
 
-salary
+**Properties:**
+- `name` - Name of the hospital
+- `doctors` - List of doctors working at the hospital
+- `nurses` - List of nurses working at the hospital
+- `patients` - List of patients at the hospital
 
-specialization (for doctors only)
+**Methods:**
+- `addDoctor(Doctor doctor)` - Adds a doctor to the hospital
+- `addPatient(Patient patient)` - Adds a patient to the hospital
 
-System Architecture
-
-The system follows a layered architecture:
-
-1. Domain Layer
-
-Defines the core entities:
-
-Staff (base class)
-
-Doctor (inherits Staff)
-
-Nurse (inherits Staff)
-
-Admin (inherits Staff)
-
-2. Data Layer
-
-Stores staff in memory using lists.
-
-Functions to add, remove, and list staff.
-
-3. UI Layer
-
-Console interface for interacting with the system.
-
-Menu-driven options to manage staff.
-
-Class Diagram (Simplified)
-Staff (abstract)
- ├─ Doctor
- ├─ Nurse
- └─ Admin
-
-Hospital
- └─ List<Staff>
+## Usage Example
+```dart

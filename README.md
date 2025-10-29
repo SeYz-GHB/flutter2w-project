@@ -51,3 +51,12 @@ The main class that manages the hospital operations.
 
 ## Usage Example
 ```dart
+
+
+
+## modify id of specific job: 
+Doctor start from DR-0001
+Nurse start from NRS-0001
+AdminStrativeStaff start from ADMS-0001
+
+user don't have to input id, the id is auto increment

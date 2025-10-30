@@ -45,19 +45,18 @@
 //     print('Patient ${patient.name} added!');
 //   }
 // }
-enum Department{ }
 abstract class Person{
   String id;
   String name;
   int age;
   String email;
   String phoneNumber;
-  Person({required this.id, required this.name, rethis.age, this.email, this.phoneNumber});
+  Person(this.id, this.name, this.age, this.email, this.phoneNumber);
 }
 
 class Staff extends Person{
   String role;
 
-  Staff(super.name, super.age, super.email, super.phoneNumber);
-
+  Staff(String id, String name, int age, String email, String phoneNumber, this.role)
+      : super(id, name, age, email, phoneNumber);
 }

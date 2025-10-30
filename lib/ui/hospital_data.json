@@ -1,0 +1,13 @@
+{
+  "name": "Royal hospital",
+  "doctors": [
+    {
+      "id": "DR-0001",
+      "name": "Soy Chanratana",
+      "salary": 1290.0,
+      "specialization": "General"
+    }
+  ],
+  "nurses": [],
+  "adminStaff": []
+}

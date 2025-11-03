@@ -1,27 +1,31 @@
 class Room {
-  int? roomId;
-  String roomNumber;
+  int? id;
+  String number;
   String type;
-  bool availability;
+  int capacity;
+  int availableBeds;
 
   Room({
-    this.roomId,
-    required this.roomNumber,
+    this.id,
+    required this.number,
     required this.type,
-    required this.availability,
+    required this.capacity,
+    required this.availableBeds,
   });
 
   factory Room.fromJson(Map<String, dynamic> json) => Room(
-        roomId: json['room_id'],
-        roomNumber: json['room_number'],
+        id: json['id'],
+        number: json['number'],
         type: json['type'],
-        availability: json['availability'] == 1 || json['availability'] == true,
+        capacity: json['capacity'],
+        availableBeds: json['available_beds'],
       );
 
   Map<String, dynamic> toJson() => {
-        'room_id': roomId,
-        'room_number': roomNumber,
+        'id': id,
+        'number': number,
         'type': type,
-        'availability': availability ? 1 : 0,
+        'capacity': capacity,
+        'available_beds': availableBeds,
       };
 }

@@ -1,85 +1,85 @@
-import 'package:mysql1/mysql1.dart';
+import 'package:mysql_client/mysql_client.dart';
 
 class DbHelper {
-  static MySqlConnection? _connection;
+  static MySQLConnection? _connection;
 
   // ✅ Connect once and reuse the connection
-  static Future<MySqlConnection> connect() async {
+  static Future<MySQLConnection> connect() async {
     try {
       if (_connection == null) {
-        final settings = ConnectionSettings(
-          host: 'localhost', // your MySQL host
-          port: 3306, // default port
-          user: 'root', // your MySQL user
-          password: '', // your MySQL password
-          db: 'hospital_management', // your database name
+        _connection = await MySQLConnection.createConnection(
+          host: 'localhost',
+          port: 3306,
+          userName: 'root',
+          password: r"Pisey@!#$%^&*1234858483", // Update this to your password
+          databaseName: 'hospital_management',
         );
-        _connection = await MySqlConnection.connect(settings);
+        
+        await _connection!.connect();
         print('✅ Connected successfully!');
 
-        // quick debug: list tables and counts for common tables so we can
-        // verify the DB was initialized correctly.
+        // quick debug: list tables and counts for common tables
         try {
-          final tables = await _connection!.query('SHOW TABLES');
+          final tables = await _connection!.execute('SHOW TABLES');
           print('🔎 Tables in database:');
-          for (var row in tables) {
-            // row[0] is the table name
-            print('  - ${row[0]}');
+          for (var row in tables.rows) {
+            print('  - ${row.colAt(0)}');
           }
 
           // try counts for doctor and patient if present
           try {
-            var r = await _connection!.query('SELECT COUNT(*) as c FROM doctor');
-            print('  doctor count: ${r.first['c']}');
+            var r = await _connection!.execute('SELECT COUNT(*) as c FROM doctor');
+            print('  doctor count: ${r.rows.first.colByName('c')}');
           } catch (_) {
             print('  doctor table: not found or count failed');
           }
           try {
-            var r = await _connection!.query('SELECT COUNT(*) as c FROM patient');
-            print('  patient count: ${r.first['c']}');
+            var r = await _connection!.execute('SELECT COUNT(*) as c FROM patient');
+            print('  patient count: ${r.rows.first.colByName('c')}');
           } catch (_) {
             print('  patient table: not found or count failed');
           }
           try {
-            var r = await _connection!.query('SELECT COUNT(*) as c FROM bed');
-            print('  bed count: ${r.first['c']}');
+            var r = await _connection!.execute('SELECT COUNT(*) as c FROM bed');
+            print('  bed count: ${r.rows.first.colByName('c')}');
           } catch (_) {
             print('  bed table: not found or count failed');
           }
         } catch (e) {
           print('⚠️ Could not list tables: $e');
         }
-        // Additional debug: print column names and up to 5 rows from doctor and patient
+
+        // Additional debug: print column names
         try {
-          var cols = await _connection!.query(
+          var cols = await _connection!.execute(
               "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'hospital_management' AND TABLE_NAME = 'doctor'");
-          print('🔧 doctor columns: ${cols.map((r) => r[0]).toList()}');
+          print('🔧 doctor columns: ${cols.rows.map((r) => r.colAt(0)).toList()}');
         } catch (e) {
           print('🔧 doctor columns: failed to read ($e)');
         }
         try {
-          var cols = await _connection!.query(
+          var cols = await _connection!.execute(
               "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'hospital_management' AND TABLE_NAME = 'patient'");
-          print('🔧 patient columns: ${cols.map((r) => r[0]).toList()}');
+          print('🔧 patient columns: ${cols.rows.map((r) => r.colAt(0)).toList()}');
         } catch (e) {
           print('🔧 patient columns: failed to read ($e)');
         }
 
         try {
-          var rows = await _connection!.query('SELECT * FROM doctor LIMIT 5');
-          print('📝 doctor sample rows (positional):');
-          for (var row in rows) {
-            print('   - ${row.toList()}');
+          var rows = await _connection!.execute('SELECT * FROM doctor LIMIT 5');
+          print('📝 doctor sample rows:');
+          for (var row in rows.rows) {
+            print('   - ${row.assoc()}');
           }
         } catch (e) {
           print('📝 doctor sample rows: failed ($e)');
         }
 
         try {
-          var rows = await _connection!.query('SELECT * FROM patient LIMIT 5');
-          print('📝 patient sample rows (positional):');
-          for (var row in rows) {
-            print('   - ${row.toList()}');
+          var rows = await _connection!.execute('SELECT * FROM patient LIMIT 5');
+          print('📝 patient sample rows:');
+          for (var row in rows.rows) {
+            print('   - ${row.assoc()}');
           }
         } catch (e) {
           print('📝 patient sample rows: failed ($e)');
@@ -97,21 +97,22 @@ class DbHelper {
   static Future<List<Map<String, dynamic>>> getDoctors() async {
     try {
       final conn = await connect();
-      // alias dept_id to department_id so mapping in UI matches
-    // doctor table uses `doctor_id` and `dept_id` per your SQL file
-    final results = await conn.query(
-      'SELECT doctor_id AS id, name, specialization, dept_id AS department_id, phone, email FROM doctor');
+      final results = await conn.execute(
+        'SELECT doctor_id AS id, name, specialization, dept_id AS department_id, phone, email FROM doctor');
 
-    return results
-      .map((row) => {
-        'id': row['id'],
-        'name': row['name'],
-        'specialization': row['specialization'],
-        'department_id': row['department_id'],
-        'phone': row['phone'],
-        'email': row['email']
-        })
-      .toList();
+      return results.rows
+          .map((row) {
+            final data = row.assoc();
+            return {
+              'id': data['id'],
+              'name': data['name'],
+              'specialization': data['specialization'],
+              'department_id': data['department_id'],
+              'phone': data['phone'],
+              'email': data['email']
+            };
+          })
+          .toList();
     } catch (e, st) {
       print('❌ getDoctors error: $e');
       print(st);
@@ -123,19 +124,20 @@ class DbHelper {
   static Future<List<Map<String, dynamic>>> getPatients() async {
     try {
       final conn = await connect();
-    // patient table uses `patient_id` per your SQL file
-    final results =
-      await conn.query('SELECT patient_id AS id, name, gender, dob FROM patient');
+      final results = await conn.execute(
+          'SELECT patient_id AS id, name, gender, dob FROM patient');
 
-    return results
-      .map((row) => {
-        'id': row['id'],
-        'name': row['name'],
-        'gender': row['gender'],
-        // convert DOB to string to avoid issues when printing
-        'dob': row['dob']?.toString()
-        })
-      .toList();
+      return results.rows
+          .map((row) {
+            final data = row.assoc();
+            return {
+              'id': data['id'],
+              'name': data['name'],
+              'gender': data['gender'],
+              'dob': data['dob']?.toString()
+            };
+          })
+          .toList();
     } catch (e, st) {
       print('❌ getPatients error: $e');
       print(st);
@@ -147,23 +149,24 @@ class DbHelper {
   static Future<List<Map<String, dynamic>>> getRoomsAndBeds() async {
     try {
       final conn = await connect();
-    // rooms and beds are split into `room` and `bed` tables in your SQL
-    final results = await conn.query('''
-    SELECT r.room_number, b.bed_number, b.is_occupied
-    FROM bed b
-    JOIN room r ON b.room_id = r.room_id
-    ''');
+      final results = await conn.execute('''
+        SELECT r.room_number, b.bed_number, b.is_occupied
+        FROM bed b
+        JOIN room r ON b.room_id = r.room_id
+      ''');
 
-    return results
-      .map((row) => {
-        'room_number': row['room_number'],
-        'bed_number': row['bed_number'],
-        // map is_occupied -> availability string for UI
-        'availability': (row['is_occupied'] == 1 || row['is_occupied'] == true)
-          ? 'Occupied'
-          : 'Available'
-        })
-      .toList();
+      return results.rows
+          .map((row) {
+            final data = row.assoc();
+            return {
+              'room_number': data['room_number'],
+              'bed_number': data['bed_number'],
+              'availability': (data['is_occupied'] == 1 || data['is_occupied'] == '1')
+                  ? 'Occupied'
+                  : 'Available'
+            };
+          })
+          .toList();
     } catch (e, st) {
       print('❌ getRoomsAndBeds error: $e');
       print(st);

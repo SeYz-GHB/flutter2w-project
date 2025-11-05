@@ -7,58 +7,26 @@
       "name": "flutter2w_project",
       "version": "1.0.0",
       "dependencies": [
-        "flutter",
-        "mysql_client"
+        "path",
+        "sqflite_common_ffi"
       ],
       "devDependencies": []
     },
     {
-      "name": "mysql_client",
-      "version": "0.0.27",
-      "dependencies": [
-        "buffer",
-        "crypto",
-        "tuple"
-      ]
+      "name": "path",
+      "version": "1.9.1",
+      "dependencies": []
     },
     {
-      "name": "flutter",
-      "version": "0.0.0",
+      "name": "sqflite_common_ffi",
+      "version": "2.3.6",
       "dependencies": [
-        "characters",
-        "collection",
-        "material_color_utilities",
         "meta",
-        "sky_engine",
-        "vector_math"
+        "path",
+        "sqflite_common",
+        "sqlite3",
+        "synchronized"
       ]
-    },
-    {
-      "name": "tuple",
-      "version": "2.0.2",
-      "dependencies": []
-    },
-    {
-      "name": "crypto",
-      "version": "3.0.6",
-      "dependencies": [
-        "typed_data"
-      ]
-    },
-    {
-      "name": "buffer",
-      "version": "1.2.3",
-      "dependencies": []
-    },
-    {
-      "name": "sky_engine",
-      "version": "0.0.0",
-      "dependencies": []
-    },
-    {
-      "name": "vector_math",
-      "version": "2.2.0",
-      "dependencies": []
     },
     {
       "name": "meta",
@@ -66,21 +34,30 @@
       "dependencies": []
     },
     {
-      "name": "material_color_utilities",
-      "version": "0.11.1",
+      "name": "synchronized",
+      "version": "3.4.0",
+      "dependencies": []
+    },
+    {
+      "name": "sqflite_common",
+      "version": "2.5.6",
       "dependencies": [
-        "collection"
+        "meta",
+        "path",
+        "synchronized"
       ]
     },
     {
-      "name": "collection",
-      "version": "1.19.1",
-      "dependencies": []
-    },
-    {
-      "name": "characters",
-      "version": "1.4.0",
-      "dependencies": []
+      "name": "sqlite3",
+      "version": "2.9.4",
+      "dependencies": [
+        "collection",
+        "ffi",
+        "meta",
+        "path",
+        "typed_data",
+        "web"
+      ]
     },
     {
       "name": "typed_data",
@@ -88,6 +65,21 @@
       "dependencies": [
         "collection"
       ]
+    },
+    {
+      "name": "web",
+      "version": "1.1.1",
+      "dependencies": []
+    },
+    {
+      "name": "ffi",
+      "version": "2.1.4",
+      "dependencies": []
+    },
+    {
+      "name": "collection",
+      "version": "1.19.1",
+      "dependencies": []
     }
   ],
   "configVersion": 1

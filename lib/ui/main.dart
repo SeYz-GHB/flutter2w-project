@@ -16,7 +16,7 @@ void main() async {
         await patientMenu();
         break;
       case '3':
-        appointmentMenu();
+        await appointmentMenu();
         break;
       case '4':
         await viewAllStaff();
@@ -129,12 +129,9 @@ Future<void> patientMenu() async {
       await addPatient();
       break;
     case '2':
-      admitPatient();
-      break;
-    case '3':
       await removePatient();
       break;
-    case '4':
+    case '3':
       return;
     default:
       print('Invalid choice.');
@@ -144,17 +141,199 @@ Future<void> patientMenu() async {
 // =======================
 // Appointment Menu
 // =======================
-void appointmentMenu() {
+// =======================
+// Appointment Menu
+// =======================
+Future<void> appointmentMenu() async {
   print('\n===== APPOINTMENT MANAGEMENT =====');
-  stdout.write('Patient Name: ');
-  String patient = stdin.readLineSync()!;
-  stdout.write('Doctor Name: ');
-  String doctor = stdin.readLineSync()!;
+  print('1 - Create Appointment');
+  print('2 - View All Appointments');
+  print('3 - Cancel/Delete Appointment');
+  print('4 - Back to Main Menu');
+  stdout.write('Choose an option: ');
+  String? choice = stdin.readLineSync();
+
+  switch (choice) {
+    case '1':
+      await createAppointment();
+      break;
+    case '2':
+      await viewAppointments();
+      break;
+    case '3':
+      await cancelAppointment();
+      break;
+    case '4':
+      return;
+    default:
+      print('Invalid choice.');
+  }
+}
+
+// Create a new appointment
+Future<void> createAppointment() async {
+  print('\n===== CREATE APPOINTMENT =====');
+  
+  // Get patient ID with retry
+  int? patientId;
+  while (patientId == null) {
+    final patients = await DbHelper.getPatients();
+    if (patients.isEmpty) {
+      print('❌ No patients in system. Add patients first.');
+      return;
+    }
+    
+    print('\nAvailable Patients:');
+    for (var p in patients) {
+      print('  ID: ${p['id']} - ${p['name']}');
+    }
+    
+    stdout.write('Enter Patient ID (or 0 to cancel): ');
+    int? inputId = int.tryParse(stdin.readLineSync()!);
+    
+    if (inputId == 0) {
+      print('Cancelled.');
+      return;
+    }
+    
+    if (inputId == null) {
+      print('❌ Invalid input. Please enter a number.');
+      continue;
+    }
+    
+    if (!patients.any((p) => p['id'] == inputId)) {
+      print('❌ Patient ID $inputId not found. Please try again.');
+      continue;
+    }
+    
+    patientId = inputId;
+  }
+  
+  // Get doctor ID with retry
+  int? doctorId;
+  while (doctorId == null) {
+    final doctors = await DbHelper.getDoctors();
+    if (doctors.isEmpty) {
+      print('❌ No doctors in system. Add doctors first.');
+      return;
+    }
+    
+    print('\nAvailable Doctors:');
+    for (var d in doctors) {
+      print('  ID: ${d['id']} - ${d['name']} (${d['specialization']})');
+    }
+    
+    stdout.write('Enter Doctor ID (or 0 to cancel): ');
+    int? inputId = int.tryParse(stdin.readLineSync()!);
+    
+    if (inputId == 0) {
+      print('Cancelled.');
+      return;
+    }
+    
+    if (inputId == null) {
+      print('❌ Invalid input. Please enter a number.');
+      continue;
+    }
+    
+    if (!doctors.any((d) => d['id'] == inputId)) {
+      print('❌ Doctor ID $inputId not found. Please try again.');
+      continue;
+    }
+    
+    doctorId = inputId;
+  }
+  
   stdout.write('Date (YYYY-MM-DD HH:MM): ');
   String date = stdin.readLineSync()!;
   stdout.write('Reason: ');
   String reason = stdin.readLineSync()!;
-  print('Appointment added: $patient with $doctor on $date because $reason');
+  
+  bool success = await DbHelper.insertAppointment(
+    patientId: patientId,
+    doctorId: doctorId,
+    appointmentDate: date,
+    status: 'Scheduled',
+    reason: reason,
+  );
+  
+  if (success) {
+    print('✅ Appointment created successfully!');
+  } else {
+    print('❌ Failed to create appointment');
+  }
+}
+
+// View all appointments
+Future<void> viewAppointments() async {
+  print('\n===== ALL APPOINTMENTS =====');
+  final appointments = await DbHelper.getAppointments();
+  
+  if (appointments.isEmpty) {
+    print('No appointments found.');
+  } else {
+    for (var a in appointments) {
+      print('─' * 60);
+      print('ID: ${a['id']}');
+      print('Patient: ${a['patient_name']}');
+      print('Doctor: ${a['doctor_name']} (${a['specialization']})');
+      print('Date: ${a['date']}');
+      print('Status: ${a['status']}');
+      print('Reason: ${a['reason'] ?? 'N/A'}');
+    }
+    print('─' * 60);
+  }
+}
+
+// Cancel/Delete an appointment
+Future<void> cancelAppointment() async {
+  print('\n===== CANCEL APPOINTMENT =====');
+  
+  int? appointmentId;
+  while (appointmentId == null) {
+    final appointments = await DbHelper.getAppointments();
+    if (appointments.isEmpty) {
+      print('❌ No appointments to cancel.');
+      return;
+    }
+    
+    print('\nCurrent Appointments:');
+    for (var a in appointments) {
+      print('ID: ${a['id']} - ${a['patient_name']} with Dr. ${a['doctor_name']} on ${a['date']} [${a['status']}]');
+    }
+    
+    stdout.write('\nEnter Appointment ID to cancel (or 0 to go back): ');
+    int? inputId = int.tryParse(stdin.readLineSync()!);
+    
+    if (inputId == 0) {
+      print('Cancelled.');
+      return;
+    }
+    
+    if (inputId == null) {
+      print('❌ Invalid input. Please enter a number.');
+      continue;
+    }
+    
+    if (!appointments.any((a) => a['id'] == inputId)) {
+      print('❌ Appointment ID $inputId not found. Please try again.');
+      continue;
+    }
+    
+    appointmentId = inputId;
+  }
+  
+  stdout.write('Are you sure you want to cancel this appointment? (y/n): ');
+  String? confirm = stdin.readLineSync()?.toLowerCase();
+  
+  if (confirm == 'y' || confirm == 'yes') {
+    bool success = await DbHelper.deleteAppointment(appointmentId);
+    if (!success) {
+      print('❌ Failed to cancel appointment');
+    }
+  } else {
+    print('Cancellation aborted.');
+  }
 }
 
 // =======================
@@ -235,17 +414,7 @@ Future<void> addPatient() async {
   );
 }
 
-void admitPatient() {
-  stdout.write('Patient Name: ');
-  String name = stdin.readLineSync()!;
-  stdout.write('Room Number: ');
-  String room = stdin.readLineSync()!;
-  stdout.write('Bed Number: ');
-  String bed = stdin.readLineSync()!;
-  stdout.write('Admit Date (YYYY-MM-DD): ');
-  String date = stdin.readLineSync()!;
-  print('Patient admitted: $name, Room $room, Bed $bed on $date');
-}
+
 
 // =======================
 // Delete Functions

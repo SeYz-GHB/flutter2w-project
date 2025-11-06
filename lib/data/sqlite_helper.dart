@@ -439,27 +439,66 @@ static Future<bool> deletePatient(int patientId) async {
   }
 }
 
-  // ✅ Get all rooms and beds
-  static Future<List<Map<String, dynamic>>> getRoomsAndBeds() async {
-    try {
-      final db = await connect();
-      final results = await db.query('room');
+// Add these two new functions at the bottom, before the closing }
 
-      return results.map((row) {
-        int available = row['available_beds'] as int;
-        int capacity = row['capacity'] as int;
-        return {
-          'room_number': row['number'],
-          'bed_number': '${capacity - available}/$capacity occupied',
-          'availability': available > 0 ? 'Available ($available)' : 'Full'
-        };
-      }).toList();
-    } catch (e, st) {
-      print('❌ getRoomsAndBeds error: $e');
-      print(st);
-      return [];
+static Future<bool> deleteAppointment(int appointmentId) async {
+  try {
+    final db = await connect();
+    final count = await db.delete(
+      'appointment',
+      where: 'appointment_id = ?',
+      whereArgs: [appointmentId],
+    );
+    if (count > 0) {
+      print('✅ Appointment deleted successfully!');
+      return true;
+    } else {
+      print('❌ Appointment not found.');
+      return false;
     }
+  } catch (e, st) {
+    print('❌ deleteAppointment error: $e');
+    print(st);
+    return false;
   }
+}
+
+static Future<List<Map<String, dynamic>>> getAppointments() async {
+  try {
+    final db = await connect();
+    final results = await db.rawQuery('''
+      SELECT 
+        a.appointment_id,
+        a.appointment_date,
+        a.status,
+        a.reason,
+        p.name as patient_name,
+        d.name as doctor_name,
+        d.specialization
+      FROM appointment a
+      JOIN patient p ON a.patient_id = p.patient_id
+      JOIN doctor d ON a.doctor_id = d.doctor_id
+      ORDER BY a.appointment_date DESC
+    ''');
+
+    return results.map((row) {
+      return {
+        'id': row['appointment_id'],
+        'patient_name': row['patient_name'],
+        'doctor_name': row['doctor_name'],
+        'specialization': row['specialization'],
+        'date': row['appointment_date'],
+        'status': row['status'],
+        'reason': row['reason']
+      };
+    }).toList();
+  } catch (e, st) {
+    print('❌ getAppointments error: $e');
+    print(st);
+    return [];
+  }
+}
+
 
   // Helper: Delete and recreate database
   static Future<void> resetDatabase() async {

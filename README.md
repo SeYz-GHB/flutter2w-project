@@ -298,28 +298,10 @@ dart lib/ui/db_test.dart
 **Issue: Import path errors**
 - Solution: Use relative imports (`../database/database.dart`) from UI files
 
-## Future Enhancements
-
-### Potential Features to Add
-- [ ] Department management (add/edit/delete departments)
-- [ ] Room management (room allocation)
-- [ ] Billing system
-- [ ] Medical records
-- [ ] Admission/discharge tracking
-- [ ] Search functionality
-- [ ] Data export (CSV/PDF)
-- [ ] User authentication
-- [ ] Report generation
-- [ ] Appointment reminders
 
 ## Author
-
-Your Name
-
-## License
-
-This project is open source and available under the [MIT License](LICENSE).
-
+Khen chandarapisey
+Soy Chanratana
 ## Acknowledgments
 
 - Dart team for excellent documentation

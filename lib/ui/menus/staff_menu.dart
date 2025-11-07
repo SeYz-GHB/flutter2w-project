@@ -1,41 +1,64 @@
 import 'dart:io';
 import '../../database/database.dart';
+import '../utils/screen_utils.dart';
 
 Future<void> staffMenu() async {
-  print('\n===== STAFF MANAGEMENT =====');
-  print('1 - Add Doctor');
-  print('2 - Add Nurse');
-  print('3 - Add Admin');
-  print('4 - Remove Doctor');
-  print('5 - Remove Nurse');
-  print('6 - Remove Admin');
-  print('7 - Back to Main Menu');
-  stdout.write('Choose an option: ');
-  String? choice = stdin.readLineSync();
+  while (true) {
+    clearScreenSimple();  // ← Clear screen
+    print('\n===== STAFF MANAGEMENT =====');
+    print('1 - Add Doctor');
+    print('2 - Add Nurse');
+    print('3 - Add Admin');
+    print('4 - Remove Doctor');
+    print('5 - Remove Nurse');
+    print('6 - Remove Admin');
+    print('7 - Back to Main Menu');
+    stdout.write('Choose an option: ');
+    String? choice = stdin.readLineSync();
 
-  switch (choice) {
-    case '1':
-      await addDoctor();
-      break;
-    case '2':
-      await addNurse();
-      break;
-    case '3':
-      await addAdmin();
-      break;
-    case '4':
-      await removeDoctor();
-      break;
-    case '5':
-      await removeNurse();
-      break;
-    case '6':
-      await removeAdmin();
-      break;
-    case '7':
-      return;
-    default:
-      print('Invalid choice.');
+    switch (choice) {
+      case '1':
+        clearScreenSimple();
+        await addDoctor();
+        stdout.write('\nPress Enter to continue...');
+        stdin.readLineSync();
+        break;
+      case '2':
+        clearScreenSimple();
+        await addNurse();
+        stdout.write('\nPress Enter to continue...');
+        stdin.readLineSync();
+        break;
+      case '3':
+        clearScreenSimple();
+        await addAdmin();
+        stdout.write('\nPress Enter to continue...');
+        stdin.readLineSync();
+        break;
+      case '4':
+        clearScreenSimple();
+        await removeDoctor();
+        stdout.write('\nPress Enter to continue...');
+        stdin.readLineSync();
+        break;
+      case '5':
+        clearScreenSimple();
+        await removeNurse();
+        stdout.write('\nPress Enter to continue...');
+        stdin.readLineSync();
+        break;
+      case '6':
+        clearScreenSimple();
+        await removeAdmin();
+        stdout.write('\nPress Enter to continue...');
+        stdin.readLineSync();
+        break;
+      case '7':
+        return;
+      default:
+        print('Invalid choice.');
+        await Future.delayed(Duration(seconds: 1));
+    }
   }
 }
 

@@ -27,42 +27,41 @@ class AppointmentOperations {
     }
   }
 
-  // ✅ Get all appointments with patient and doctor details
   static Future<List<Map<String, dynamic>>> getAppointments() async {
-    try {
-      final db = await DbHelper.connect();
-      final results = await db.rawQuery('''
-        SELECT 
-          a.appointment_id,
-          a.appointment_date,
-          a.status,
-          a.reason,
-          p.name as patient_name,
-          d.name as doctor_name,
-          d.specialization
-        FROM appointment a
-        JOIN patient p ON a.patient_id = p.patient_id
-        JOIN doctor d ON a.doctor_id = d.doctor_id
-        ORDER BY a.appointment_date ASC
-      ''');
+  try {
+    final db = await DbHelper.connect();
+    final results = await db.rawQuery('''
+      SELECT 
+        a.appointment_id,
+        a.appointment_date,
+        a.status,
+        a.reason,
+        p.name as patient_name,
+        d.name as doctor_name,
+        d.specialization
+      FROM appointment a
+      JOIN patient p ON a.patient_id = p.patient_id
+      JOIN doctor d ON a.doctor_id = d.doctor_id
+      ORDER BY datetime(a.appointment_date) ASC  -- ✅ ONLY THIS LINE CHANGED
+    ''');
 
-      return results.map((row) {
-        return {
-          'id': row['appointment_id'],
-          'patient_name': row['patient_name'],
-          'doctor_name': row['doctor_name'],
-          'specialization': row['specialization'],
-          'date': row['appointment_date'],
-          'status': row['status'],
-          'reason': row['reason']
-        };
-      }).toList();
-    } catch (e, st) {
-      print('❌ getAppointments error: $e');
-      print(st);
-      return [];
-    }
+    return results.map((row) {
+      return {
+        'id': row['appointment_id'],
+        'patient_name': row['patient_name'],
+        'doctor_name': row['doctor_name'],
+        'specialization': row['specialization'],
+        'date': row['appointment_date'],
+        'status': row['status'],
+        'reason': row['reason']
+      };
+    }).toList();
+  } catch (e, st) {
+    print('❌ getAppointments error: $e');
+    print(st);
+    return [];
   }
+}
 
   // Delete an appointment by ID
   static Future<bool> deleteAppointment(int appointmentId) async {

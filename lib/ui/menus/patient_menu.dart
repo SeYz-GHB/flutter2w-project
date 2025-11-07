@@ -1,25 +1,36 @@
 import 'dart:io';
 import '../../database/database.dart';
+import '../utils/screen_utils.dart';
 
 Future<void> patientMenu() async {
-  print('\n===== PATIENT MANAGEMENT =====');
-  print('1 - Add Patient');
-  print('2 - Remove Patient');
-  print('3 - Back to Main Menu');
-  stdout.write('Choose an option: ');
-  String? choice = stdin.readLineSync();
+  while (true) {
+    clearScreenSimple();  
+    print('\n===== PATIENT MANAGEMENT =====');
+    print('1 - Add Patient');
+    print('2 - Remove Patient');
+    print('3 - Back to Main Menu');
+    stdout.write('Choose an option: ');
+    String? choice = stdin.readLineSync();
 
-  switch (choice) {
-    case '1':
-      await addPatient();
-      break;
-    case '2':
-      await removePatient();
-      break;
-    case '3':
-      return;
-    default:
-      print('Invalid choice.');
+    switch (choice) {
+      case '1':
+        clearScreenSimple();
+        await addPatient();
+        stdout.write('\nPress Enter to continue...');
+        stdin.readLineSync();
+        break;
+      case '2':
+        clearScreenSimple();
+        await removePatient();
+        stdout.write('\nPress Enter to continue...');
+        stdin.readLineSync();
+        break;
+      case '3':
+        return;
+      default:
+        print('Invalid choice.');
+        await Future.delayed(Duration(seconds: 1));
+    }
   }
 }
 

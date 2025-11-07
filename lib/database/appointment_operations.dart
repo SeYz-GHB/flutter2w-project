@@ -43,7 +43,7 @@ class AppointmentOperations {
         FROM appointment a
         JOIN patient p ON a.patient_id = p.patient_id
         JOIN doctor d ON a.doctor_id = d.doctor_id
-        ORDER BY a.appointment_date DESC
+        ORDER BY a.appointment_date ASC
       ''');
 
       return results.map((row) {

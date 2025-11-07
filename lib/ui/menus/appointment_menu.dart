@@ -135,10 +135,10 @@ Future<void> viewAppointments() async {
   } else {
     for (var a in appointments) {
       print('─' * 60);
+      print('Date: ${a['date']}');
       print('ID: ${a['id']}');
       print('Patient: ${a['patient_name']}');
       print('Doctor: ${a['doctor_name']} (${a['specialization']})');
-      print('Date: ${a['date']}');
       print('Status: ${a['status']}');
       print('Reason: ${a['reason'] ?? 'N/A'}');
     }

@@ -1,21 +1,26 @@
 import 'department.dart';
+import 'staff.dart';
 
-class Doctor {
+class Doctor extends Staff {
   int? doctorId;
-  String name;
   String? specialization;
-  Department? department;
   String? phone;
   String? email;
 
   Doctor({
     this.doctorId,
-    required this.name,
+    required String name,
     this.specialization,
-    this.department,
+    Department? department,
     this.phone,
     this.email,
-  });
+  }) : super(
+          staffId: doctorId,
+          name: name,
+          role: 'Doctor',
+          department: department,
+          contact: phone,
+        );
 
   factory Doctor.fromJson(Map<String, dynamic> json) => Doctor(
         doctorId: json['doctor_id'],
@@ -28,6 +33,7 @@ class Doctor {
         email: json['email'],
       );
 
+  @override
   Map<String, dynamic> toJson() => {
         'doctor_id': doctorId,
         'name': name,

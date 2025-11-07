@@ -1,12 +1,9 @@
 import 'db_helper.dart';
 
 class StaffOperations {
-  // ✅ Insert a new nurse (as staff)
-  static Future<bool> insertNurse({
-    required String name,
-    required int deptId,
-    String? contact,
-  }) async {
+
+
+  static Future<bool> insertNurse({required String name,required int deptId,String? contact,}) async {
     try {
       final db = await DbHelper.connect();
       await db.insert('staff', {
@@ -18,19 +15,13 @@ class StaffOperations {
       print('✅ Nurse saved to database!');
       return true;
     } catch (e, st) {
-      print('❌ insertNurse error: $e');
+      print(' insertNurse error: $e');
       print(st);
       return false;
     }
   }
 
-  // ✅ Insert a new admin (as staff)
-  static Future<bool> insertAdmin({
-    required String name,
-    required String role,
-    required int deptId,
-    String? contact,
-  }) async {
+  static Future<bool> insertAdmin({required String name,required String role,required int deptId,String? contact,}) async {
     try {
       final db = await DbHelper.connect();
       await db.insert('staff', {
@@ -42,13 +33,12 @@ class StaffOperations {
       print('✅ Admin saved to database!');
       return true;
     } catch (e, st) {
-      print('❌ insertAdmin error: $e');
+      print(' insertAdmin error: $e');
       print(st);
       return false;
     }
   }
 
-  // ✅ Get all staff (nurses and admins)
   static Future<List<Map<String, dynamic>>> getStaff() async {
     try {
       final db = await DbHelper.connect();
@@ -64,13 +54,12 @@ class StaffOperations {
         };
       }).toList();
     } catch (e, st) {
-      print('❌ getStaff error: $e');
+      print(' getStaff error: $e');
       print(st);
       return [];
     }
   }
 
-  // Delete a nurse by ID
   static Future<bool> deleteNurse(int staffId) async {
     try {
       final db = await DbHelper.connect();
@@ -83,17 +72,16 @@ class StaffOperations {
         print('✅ Nurse deleted successfully!');
         return true;
       } else {
-        print('❌ Nurse not found.');
+        print(' Nurse not found.');
         return false;
       }
     } catch (e, st) {
-      print('❌ deleteNurse error: $e');
+      print(' deleteNurse error: $e');
       print(st);
       return false;
     }
   }
 
-  // Delete an admin by ID
   static Future<bool> deleteAdmin(int staffId) async {
     try {
       final db = await DbHelper.connect();
@@ -106,11 +94,11 @@ class StaffOperations {
         print('✅ Admin deleted successfully!');
         return true;
       } else {
-        print('❌ Admin not found.');
+        print(' Admin not found.');
         return false;
       }
     } catch (e, st) {
-      print('❌ deleteAdmin error: $e');
+      print(' deleteAdmin error: $e');
       print(st);
       return false;
     }

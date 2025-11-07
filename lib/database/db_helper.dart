@@ -10,20 +10,22 @@ class DbHelper {
   static Future<Database> connect() async {
     // Initialize FFI for desktop - ONLY ONCE
     if (!_initialized) {
-      sqfliteFfiInit();
-      databaseFactory = databaseFactoryFfi;
-      _initialized = true;
+      sqfliteFfiInit();// start sql engine
+      databaseFactory = databaseFactoryFfi; //Foreign Function Interface for desktop
+      _initialized = true; // do it 1 time only, when app becuase sqlite setup is expensive
     }
     
     try {
       if (_database == null) {
-        // Use current directory instead of getDatabasesPath()
-        final path = join(Directory.current.path, 'hospital_management.db');
-
+        
+        //get current directory (where my app is running) // add hospital to the path to tell sqlite where to save my file
+        final path = join(Directory.current.path, 'hospital_management.db'); 
+        
+        // use databaseFacotry to open database
         _database = await databaseFactory.openDatabase(
           path,
           options: OpenDatabaseOptions(
-            version: 1,
+            version: 1, // If I change tables later, I have to increase this number (2, 3, 4...)
             onCreate: (db, version) async {
               // Load and execute the schema file
               await _executeSqlFile(db, 'lib/assets/hospital_schema.sql');
@@ -46,13 +48,14 @@ class DbHelper {
 
   static Future<void> _executeSqlFile(Database db, String filePath) async {
     try {
-      // Read the SQL file
-      final file = File(filePath);
-      final sqlScript = await file.readAsString();
+      
 
-      // Remove single-line comments and empty lines
+      // create fle object point to lib/assets/hospital_schema.sql
+      final file = File(filePath);
+      final sqlScript = await file.readAsString(); //Read entire file as one big string
+
       final lines = sqlScript.split('\n');
-      final buffer = StringBuffer();
+      final buffer = StringBuffer();//Create empty buffer to build clean SQL
       
       for (var line in lines) {
         final trimmed = line.trim();
@@ -159,20 +162,13 @@ class DbHelper {
   // Helper: Delete and recreate database
   static Future<void> resetDatabase() async {
     final path = join(Directory.current.path, 'hospital_management.db');
-
-    // Ensure FFI is initialized so databaseFactory is available
-    if (!_initialized) {
-      sqfliteFfiInit();
-      databaseFactory = databaseFactoryFfi;
-      _initialized = true;
-    }
-
+    
     await _database?.close();
     _database = null;
-
+    
     await databaseFactory.deleteDatabase(path);
     print('🗑️ Database deleted');
-
+    
     // Reconnect to create fresh database
     await connect();
   }

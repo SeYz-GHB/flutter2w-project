@@ -7,7 +7,6 @@
       "name": "flutter2w_project",
       "version": "1.0.0",
       "dependencies": [
-        "mysql1",
         "path",
         "sqflite_common_ffi"
       ],
@@ -27,16 +26,6 @@
         "sqflite_common",
         "sqlite3",
         "synchronized"
-      ]
-    },
-    {
-      "name": "mysql1",
-      "version": "0.20.0",
-      "dependencies": [
-        "collection",
-        "crypto",
-        "logging",
-        "pool"
       ]
     },
     {
@@ -71,31 +60,6 @@
       ]
     },
     {
-      "name": "pool",
-      "version": "1.5.2",
-      "dependencies": [
-        "async",
-        "stack_trace"
-      ]
-    },
-    {
-      "name": "logging",
-      "version": "1.3.0",
-      "dependencies": []
-    },
-    {
-      "name": "crypto",
-      "version": "3.0.7",
-      "dependencies": [
-        "typed_data"
-      ]
-    },
-    {
-      "name": "collection",
-      "version": "1.19.1",
-      "dependencies": []
-    },
-    {
       "name": "typed_data",
       "version": "1.4.0",
       "dependencies": [
@@ -113,19 +77,9 @@
       "dependencies": []
     },
     {
-      "name": "stack_trace",
-      "version": "1.12.1",
-      "dependencies": [
-        "path"
-      ]
-    },
-    {
-      "name": "async",
-      "version": "2.13.0",
-      "dependencies": [
-        "collection",
-        "meta"
-      ]
+      "name": "collection",
+      "version": "1.19.1",
+      "dependencies": []
     }
   ],
   "configVersion": 1

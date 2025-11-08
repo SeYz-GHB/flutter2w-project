@@ -2,10 +2,9 @@ import 'dart:io';
 import '../../database/database.dart';
 import '../utils/screen_utils.dart';
 
-
 Future<void> appointmentMenu() async {
   while (true) {
-    clearScreenSimple(); 
+    clearScreenSimple();
     print('\n===== APPOINTMENT MANAGEMENT =====');
     print('1 - Create Appointment');
     print('2 - View All Appointments');
@@ -21,20 +20,24 @@ Future<void> appointmentMenu() async {
         stdout.write('\nPress Enter to continue...');
         stdin.readLineSync();
         break;
+
       case '2':
         clearScreenSimple();
         await viewAppointments();
         stdout.write('\nPress Enter to continue...');
         stdin.readLineSync();
         break;
+
       case '3':
         clearScreenSimple();
         await cancelAppointment();
         stdout.write('\nPress Enter to continue...');
         stdin.readLineSync();
         break;
+
       case '4':
         return;
+
       default:
         print('Invalid choice.');
         await Future.delayed(Duration(seconds: 1));
@@ -42,32 +45,28 @@ Future<void> appointmentMenu() async {
   }
 }
 
-
 String formatAppointmentDate(DateTime date) {
   return '${date.year}-'
-         '${date.month.toString().padLeft(2, '0')}-'
-         '${date.day.toString().padLeft(2, '0')} '
-         '${date.hour.toString().padLeft(2, '0')}:'
-         '${date.minute.toString().padLeft(2, '0')}';
+      '${date.month.toString().padLeft(2, '0')}-'
+      '${date.day.toString().padLeft(2, '0')} '
+      '${date.hour.toString().padLeft(2, '0')}:'
+      '${date.minute.toString().padLeft(2, '0')}';
 }
-
 
 DateTime? parseAppointmentDate(String input) {
   try {
-  
     List<String> parts = input.trim().split(' ');
     List<String> dateParts = parts[0].split('-');
-    
+
     if (dateParts.length != 3) return null;
-    
+
     int year = int.parse(dateParts[0]);
     int month = int.parse(dateParts[1]);
     int day = int.parse(dateParts[2]);
-    
+
     int hour = 0;
     int minute = 0;
-    
-  
+
     if (parts.length > 1) {
       List<String> timeParts = parts[1].split(':');
       if (timeParts.length >= 2) {
@@ -75,112 +74,109 @@ DateTime? parseAppointmentDate(String input) {
         minute = int.parse(timeParts[1]);
       }
     }
-    
+
     return DateTime(year, month, day, hour, minute);
   } catch (e) {
     return null;
   }
 }
 
-
 Future<void> createAppointment() async {
   print('\n===== CREATE APPOINTMENT =====');
-  
-  // STEP 1: Get date FIRST
+
   stdout.write('Date (YYYY-MM-DD HH:MM): ');
   String date = stdin.readLineSync()!;
-  
-  // STEP 2: Get patient ID - show only available at this date
+
   int? patientId;
   while (patientId == null) {
     final patients = await AppointmentOperations.getAvailablePatients(date);
     if (patients.isEmpty) {
-      print('❌ No available patients for $date. All are booked.');
+      print(' No available patients for $date. All are booked.');
       return;
     }
-    
-    print('\n✅ Available Patients for $date:');
+
+    print('\n Available Patients for $date:');
     for (var p in patients) {
       print('  ID: ${p['id']} - ${p['name']}');
     }
-    
+
     stdout.write('Enter Patient ID (or 0 to cancel): ');
     int? inputId = int.tryParse(stdin.readLineSync()!);
-    
+
     if (inputId == 0) {
       print('Cancelled.');
       return;
     }
-    
+
     if (inputId == null) {
-      print('❌ Invalid input. Please enter a number.');
+      print(' Invalid input. Please enter a number.');
       continue;
     }
-    
+
     if (!patients.any((p) => p['id'] == inputId)) {
-      print('❌ Patient ID $inputId not available. Please try again.');
+      print(' Patient ID $inputId not available. Please try again.');
       continue;
     }
-    
+
     patientId = inputId;
   }
-  
+
   int? doctorId;
   while (doctorId == null) {
     final doctors = await AppointmentOperations.getAvailableDoctors(date);
     if (doctors.isEmpty) {
-      print('❌ No available doctors for $date. All are booked.');
+      print(' No available doctors for $date. All are booked.');
       return;
     }
-    
-    print('\n✅ Available Doctors for $date:');
+
+    print('\n Available Doctors for $date:');
     for (var d in doctors) {
       print('  ID: ${d['id']} - ${d['name']} (${d['specialization']})');
     }
-    
+
     stdout.write('Enter Doctor ID (or 0 to cancel): ');
     int? inputId = int.tryParse(stdin.readLineSync()!);
-    
+
     if (inputId == 0) {
       print('Cancelled.');
       return;
     }
-    
+
     if (inputId == null) {
-      print('❌ Invalid input. Please enter a number.');
+      print(' Invalid input. Please enter a number.');
       continue;
     }
-    
+
     if (!doctors.any((d) => d['id'] == inputId)) {
-      print('❌ Doctor ID $inputId not available. Please try again.');
+      print(' Doctor ID $inputId not available. Please try again.');
       continue;
     }
-    
+
     doctorId = inputId;
   }
-  
 
   DateTime? appointmentDate;
   while (appointmentDate == null) {
+
     print('\nEnter appointment date and time:');
     print('Format: YYYY-MM-DD HH:MM (e.g., 2025-11-15 14:30)');
     print('Or just date: YYYY-MM-DD (time will default to 00:00)');
+
     stdout.write('Date: ');
     String? dateInput = stdin.readLineSync();
-    
+
     if (dateInput == null || dateInput.isEmpty) {
-      print('❌ Date cannot be empty.');
+      print(' Date cannot be empty.');
       continue;
     }
-    
+
     appointmentDate = parseAppointmentDate(dateInput);
-    
+
     if (appointmentDate == null) {
-      print('❌ Invalid date format. Please use YYYY-MM-DD HH:MM or YYYY-MM-DD');
+      print(' Invalid date format. Please use YYYY-MM-DD HH:MM or YYYY-MM-DD');
       continue;
     }
-    
-    // Check if date is in the past
+
     if (appointmentDate.isBefore(DateTime.now())) {
       print('⚠️  Warning: This date is in the past!');
       stdout.write('Continue anyway? (y/n): ');
@@ -191,36 +187,33 @@ Future<void> createAppointment() async {
       }
     }
   }
-  
 
   stdout.write('Reason: ');
   String reason = stdin.readLineSync() ?? '';
-  
-  // Format the date properly before saving
+
   String formattedDate = formatAppointmentDate(appointmentDate);
-  
+
   bool success = await AppointmentOperations.insertAppointment(
     patientId: patientId,
     doctorId: doctorId,
-    appointmentDate: formattedDate,  // ✅ Properly formatted
+    appointmentDate: formattedDate, //  Properly formatted
     status: 'Scheduled',
     reason: reason.isNotEmpty ? reason : null,
   );
-  
+
   if (success) {
-    print('✅ Appointment created successfully!');
+    print(' Appointment created successfully!');
     print('   Date: $formattedDate');
   } else {
-    print('❌ Failed to create appointment');
+    print(' Failed to create appointment');
   }
 }
-// =======================
-// View Appointments
-// =======================
+
 Future<void> viewAppointments() async {
+  
   print('\n===== ALL APPOINTMENTS =====');
   final appointments = await AppointmentOperations.getAppointments();
-  
+
   if (appointments.isEmpty) {
     print('No appointments found.');
   } else {
@@ -237,53 +230,53 @@ Future<void> viewAppointments() async {
   }
 }
 
-// =======================
-// Cancel Appointment
-// =======================
 Future<void> cancelAppointment() async {
   print('\n===== CANCEL APPOINTMENT =====');
-  
+
   int? appointmentId;
   while (appointmentId == null) {
     final appointments = await AppointmentOperations.getAppointments();
     if (appointments.isEmpty) {
-      print('❌ No appointments to cancel.');
+      print(' No appointments to cancel.');
       return;
     }
-    
+
     print('\nCurrent Appointments:');
     for (var a in appointments) {
-      print('ID: ${a['id']} - ${a['patient_name']} with Dr. ${a['doctor_name']} on ${a['date']} [${a['status']}]');
+      print(
+          'ID: ${a['id']} - ${a['patient_name']} with Dr. ${a['doctor_name']} on ${a['date']} [${a['status']}]');
     }
-    
+
     stdout.write('\nEnter Appointment ID to cancel (or 0 to go back): ');
     int? inputId = int.tryParse(stdin.readLineSync()!);
-    
+
     if (inputId == 0) {
       print('Cancelled.');
       return;
     }
-    
+
     if (inputId == null) {
-      print('❌ Invalid input. Please enter a number.');
+      print(' Invalid input. Please enter a number.');
       continue;
     }
-    
+
     if (!appointments.any((a) => a['id'] == inputId)) {
-      print('❌ Appointment ID $inputId not found. Please try again.');
+      print(' Appointment ID $inputId not found. Please try again.');
       continue;
     }
-    
+
     appointmentId = inputId;
   }
-  
+
+
   stdout.write('Are you sure you want to cancel this appointment? (y/n): ');
   String? confirm = stdin.readLineSync()?.toLowerCase();
-  
+
+
   if (confirm == 'y' || confirm == 'yes') {
     bool success = await AppointmentOperations.deleteAppointment(appointmentId);
     if (!success) {
-      print('❌ Failed to cancel appointment');
+      print(' Failed to cancel appointment');
     }
   } else {
     print('Cancellation aborted.');

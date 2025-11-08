@@ -1,7 +1,6 @@
 import 'db_helper.dart';
 
 class PatientOperations {
-
   static Future<bool> insertPatient({
     required String name,
     required String gender,
@@ -18,7 +17,7 @@ class PatientOperations {
         'address': address,
         'phone': phone,
       });
-      print('✅ Patient saved to database!');
+      print(' Patient saved to database!');
       return true;
     } catch (e, st) {
       print(' insertPatient error: $e');
@@ -26,7 +25,6 @@ class PatientOperations {
       return false;
     }
   }
-
 
   static Future<List<Map<String, dynamic>>> getPatients() async {
     try {
@@ -42,12 +40,11 @@ class PatientOperations {
         };
       }).toList();
     } catch (e, st) {
-      print('❌ getPatients error: $e');
+      print(' getPatients error: $e');
       print(st);
       return [];
     }
   }
-
 
   static Future<bool> deletePatient(int patientId) async {
     try {
@@ -58,7 +55,7 @@ class PatientOperations {
         whereArgs: [patientId],
       );
       if (count > 0) {
-        print('✅ Patient deleted successfully!');
+        print(' Patient deleted successfully!');
         return true;
       } else {
         print(' Patient not found.');

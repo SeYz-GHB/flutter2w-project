@@ -1,9 +1,11 @@
 import 'db_helper.dart';
 
 class StaffOperations {
-
-
-  static Future<bool> insertNurse({required String name,required int deptId,String? contact,}) async {
+  static Future<bool> insertNurse({
+    required String name,
+    required int deptId,
+    String? contact,
+  }) async {
     try {
       final db = await DbHelper.connect();
       await db.insert('staff', {
@@ -12,7 +14,7 @@ class StaffOperations {
         'dept_id': deptId,
         'contact': contact,
       });
-      print('✅ Nurse saved to database!');
+      print(' Nurse saved to database!');
       return true;
     } catch (e, st) {
       print(' insertNurse error: $e');
@@ -21,7 +23,12 @@ class StaffOperations {
     }
   }
 
-  static Future<bool> insertAdmin({required String name,required String role,required int deptId,String? contact,}) async {
+  static Future<bool> insertAdmin({
+    required String name,
+    required String role,
+    required int deptId,
+    String? contact,
+  }) async {
     try {
       final db = await DbHelper.connect();
       await db.insert('staff', {
@@ -30,7 +37,7 @@ class StaffOperations {
         'dept_id': deptId,
         'contact': contact,
       });
-      print('✅ Admin saved to database!');
+      print(' Admin saved to database!');
       return true;
     } catch (e, st) {
       print(' insertAdmin error: $e');
@@ -69,7 +76,7 @@ class StaffOperations {
         whereArgs: [staffId, 'Nurse'],
       );
       if (count > 0) {
-        print('✅ Nurse deleted successfully!');
+        print(' Nurse deleted successfully!');
         return true;
       } else {
         print(' Nurse not found.');
@@ -91,7 +98,7 @@ class StaffOperations {
         whereArgs: [staffId],
       );
       if (count > 0) {
-        print('✅ Admin deleted successfully!');
+        print(' Admin deleted successfully!');
         return true;
       } else {
         print(' Admin not found.');

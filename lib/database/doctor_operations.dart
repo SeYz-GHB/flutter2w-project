@@ -1,7 +1,7 @@
 import 'db_helper.dart';
 
 class DoctorOperations {
-  // ✅ Insert a new doctor
+  //  Insert a new doctor
   static Future<bool> insertDoctor({
     required String name,
     required String specialization,
@@ -18,16 +18,16 @@ class DoctorOperations {
         'phone': phone,
         'email': email,
       });
-      print('✅ Doctor saved to database!');
+      print(' Doctor saved to database!');
       return true;
     } catch (e, st) {
-      print('❌ insertDoctor error: $e');
+      print(' insertDoctor error: $e');
       print(st);
       return false;
     }
   }
 
-  // ✅ Get all doctors
+  //  Get all doctors
   static Future<List<Map<String, dynamic>>> getDoctors() async {
     try {
       final db = await DbHelper.connect();
@@ -44,7 +44,7 @@ class DoctorOperations {
         };
       }).toList();
     } catch (e, st) {
-      print('❌ getDoctors error: $e');
+      print(' getDoctors error: $e');
       print(st);
       return [];
     }
@@ -60,14 +60,14 @@ class DoctorOperations {
         whereArgs: [doctorId],
       );
       if (count > 0) {
-        print('✅ Doctor deleted successfully!');
+        print(' Doctor deleted successfully!');
         return true;
       } else {
-        print('❌ Doctor not found.');
+        print(' Doctor not found.');
         return false;
       }
     } catch (e, st) {
-      print('❌ deleteDoctor error: $e');
+      print(' deleteDoctor error: $e');
       print(st);
       return false;
     }

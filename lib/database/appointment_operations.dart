@@ -1,7 +1,6 @@
 import 'db_helper.dart';
 
 class AppointmentOperations {
-  
   static Future<bool> insertAppointment({
     required int patientId,
     required int doctorId,
@@ -18,19 +17,19 @@ class AppointmentOperations {
         'status': status,
         'reason': reason,
       });
-      print('✅ Appointment saved to database!');
+      print(' Appointment saved to database!');
       return true;
     } catch (e, st) {
-      print('❌ insertAppointment error: $e');
+      print(' insertAppointment error: $e');
       print(st);
       return false;
     }
   }
 
   static Future<List<Map<String, dynamic>>> getAppointments() async {
-  try {
-    final db = await DbHelper.connect();
-    final results = await db.rawQuery('''
+    try {
+      final db = await DbHelper.connect();
+      final results = await db.rawQuery('''
       SELECT 
         a.appointment_id,
         a.appointment_date,
@@ -42,26 +41,26 @@ class AppointmentOperations {
       FROM appointment a
       JOIN patient p ON a.patient_id = p.patient_id
       JOIN doctor d ON a.doctor_id = d.doctor_id
-      ORDER BY datetime(a.appointment_date) ASC  -- ✅ ONLY THIS LINE CHANGED
+      ORDER BY datetime(a.appointment_date) ASC  --  ONLY THIS LINE CHANGED
     ''');
 
-    return results.map((row) {
-      return {
-        'id': row['appointment_id'],
-        'patient_name': row['patient_name'],
-        'doctor_name': row['doctor_name'],
-        'specialization': row['specialization'],
-        'date': row['appointment_date'],
-        'status': row['status'],
-        'reason': row['reason']
-      };
-    }).toList();
-  } catch (e, st) {
-    print('❌ getAppointments error: $e');
-    print(st);
-    return [];
+      return results.map((row) {
+        return {
+          'id': row['appointment_id'],
+          'patient_name': row['patient_name'],
+          'doctor_name': row['doctor_name'],
+          'specialization': row['specialization'],
+          'date': row['appointment_date'],
+          'status': row['status'],
+          'reason': row['reason']
+        };
+      }).toList();
+    } catch (e, st) {
+      print(' getAppointments error: $e');
+      print(st);
+      return [];
+    }
   }
-}
 
   static Future<bool> deleteAppointment(int appointmentId) async {
     try {
@@ -72,28 +71,27 @@ class AppointmentOperations {
         whereArgs: [appointmentId],
       );
       if (count > 0) {
-        print('✅ Appointment deleted successfully!');
+        print(' Appointment deleted successfully!');
         return true;
       } else {
-        print('❌ Appointment not found.');
+        print(' Appointment not found.');
         return false;
       }
     } catch (e, st) {
-      print('❌ deleteAppointment error: $e');
+      print(' deleteAppointment error: $e');
       print(st);
       return false;
     }
   }
 
-
   static Future<bool> hasConflict({
-  required int patientId,
-  required int doctorId,
-  required String appointmentDate,
+    required int patientId,
+    required int doctorId,
+    required String appointmentDate,
   }) async {
     try {
       final db = await DbHelper.connect();
-      
+
       final results = await db.rawQuery('''
         SELECT COUNT(*) as count
         FROM appointment
@@ -101,16 +99,17 @@ class AppointmentOperations {
           AND appointment_date = ?
           AND status != 'Cancelled'
       ''', [patientId, doctorId, appointmentDate]);
-      
+
       int count = results.first['count'] as int;
       return count > 0;
     } catch (e) {
-      print('❌ hasConflict error: $e');
+      print(' hasConflict error: $e');
       return false;
     }
   }
 
-  static Future<List<Map<String, dynamic>>> getAvailablePatients(String appointmentDate) async {
+  static Future<List<Map<String, dynamic>>> getAvailablePatients(
+      String appointmentDate) async {
     try {
       final db = await DbHelper.connect();
       final results = await db.rawQuery('''
@@ -124,15 +123,16 @@ class AppointmentOperations {
         )
         ORDER BY p.name
       ''', [appointmentDate]);
-      
+
       return results;
     } catch (e) {
-      print('❌ getAvailablePatients error: $e');
+      print(' getAvailablePatients error: $e');
       return [];
     }
   }
 
-  static Future<List<Map<String, dynamic>>> getAvailableDoctors(String appointmentDate) async {
+  static Future<List<Map<String, dynamic>>> getAvailableDoctors(
+      String appointmentDate) async {
     try {
       final db = await DbHelper.connect();
       final results = await db.rawQuery('''
@@ -146,13 +146,11 @@ class AppointmentOperations {
         )
         ORDER BY d.name
       ''', [appointmentDate]);
-      
+
       return results;
     } catch (e) {
-      print('❌ getAvailableDoctors error: $e');
+      print(' getAvailableDoctors error: $e');
       return [];
     }
   }
 }
-
-

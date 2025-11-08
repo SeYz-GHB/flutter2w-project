@@ -1,7 +1,7 @@
 import 'db_helper.dart';
 
 class AppointmentOperations {
- 
+  
   static Future<bool> insertAppointment({
     required int patientId,
     required int doctorId,
@@ -84,4 +84,75 @@ class AppointmentOperations {
       return false;
     }
   }
+
+
+  static Future<bool> hasConflict({
+  required int patientId,
+  required int doctorId,
+  required String appointmentDate,
+  }) async {
+    try {
+      final db = await DbHelper.connect();
+      
+      final results = await db.rawQuery('''
+        SELECT COUNT(*) as count
+        FROM appointment
+        WHERE (patient_id = ? OR doctor_id = ?)
+          AND appointment_date = ?
+          AND status != 'Cancelled'
+      ''', [patientId, doctorId, appointmentDate]);
+      
+      int count = results.first['count'] as int;
+      return count > 0;
+    } catch (e) {
+      print('❌ hasConflict error: $e');
+      return false;
+    }
+  }
+
+  static Future<List<Map<String, dynamic>>> getAvailablePatients(String appointmentDate) async {
+    try {
+      final db = await DbHelper.connect();
+      final results = await db.rawQuery('''
+        SELECT p.patient_id as id, p.name, p.phone
+        FROM patient p
+        WHERE p.patient_id NOT IN (
+          SELECT patient_id 
+          FROM appointment 
+          WHERE appointment_date = ? 
+            AND status != 'Cancelled'
+        )
+        ORDER BY p.name
+      ''', [appointmentDate]);
+      
+      return results;
+    } catch (e) {
+      print('❌ getAvailablePatients error: $e');
+      return [];
+    }
+  }
+
+  static Future<List<Map<String, dynamic>>> getAvailableDoctors(String appointmentDate) async {
+    try {
+      final db = await DbHelper.connect();
+      final results = await db.rawQuery('''
+        SELECT d.doctor_id as id, d.name, d.specialization, d.phone
+        FROM doctor d
+        WHERE d.doctor_id NOT IN (
+          SELECT doctor_id 
+          FROM appointment 
+          WHERE appointment_date = ? 
+            AND status != 'Cancelled'
+        )
+        ORDER BY d.name
+      ''', [appointmentDate]);
+      
+      return results;
+    } catch (e) {
+      print('❌ getAvailableDoctors error: $e');
+      return [];
+    }
+  }
 }
+
+

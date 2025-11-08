@@ -86,16 +86,20 @@ DateTime? parseAppointmentDate(String input) {
 Future<void> createAppointment() async {
   print('\n===== CREATE APPOINTMENT =====');
   
-  // Get patient ID with retry
+  // STEP 1: Get date FIRST
+  stdout.write('Date (YYYY-MM-DD HH:MM): ');
+  String date = stdin.readLineSync()!;
+  
+  // STEP 2: Get patient ID - show only available at this date
   int? patientId;
   while (patientId == null) {
-    final patients = await PatientOperations.getPatients();
+    final patients = await AppointmentOperations.getAvailablePatients(date);
     if (patients.isEmpty) {
-      print('❌ No patients in system. Add patients first.');
+      print('❌ No available patients for $date. All are booked.');
       return;
     }
     
-    print('\nAvailable Patients:');
+    print('\n✅ Available Patients for $date:');
     for (var p in patients) {
       print('  ID: ${p['id']} - ${p['name']}');
     }
@@ -114,23 +118,22 @@ Future<void> createAppointment() async {
     }
     
     if (!patients.any((p) => p['id'] == inputId)) {
-      print('❌ Patient ID $inputId not found. Please try again.');
+      print('❌ Patient ID $inputId not available. Please try again.');
       continue;
     }
     
     patientId = inputId;
   }
   
- 
   int? doctorId;
   while (doctorId == null) {
-    final doctors = await DoctorOperations.getDoctors();
+    final doctors = await AppointmentOperations.getAvailableDoctors(date);
     if (doctors.isEmpty) {
-      print('❌ No doctors in system. Add doctors first.');
+      print('❌ No available doctors for $date. All are booked.');
       return;
     }
     
-    print('\nAvailable Doctors:');
+    print('\n✅ Available Doctors for $date:');
     for (var d in doctors) {
       print('  ID: ${d['id']} - ${d['name']} (${d['specialization']})');
     }
@@ -149,7 +152,7 @@ Future<void> createAppointment() async {
     }
     
     if (!doctors.any((d) => d['id'] == inputId)) {
-      print('❌ Doctor ID $inputId not found. Please try again.');
+      print('❌ Doctor ID $inputId not available. Please try again.');
       continue;
     }
     
@@ -189,6 +192,7 @@ Future<void> createAppointment() async {
     }
   }
   
+
   stdout.write('Reason: ');
   String reason = stdin.readLineSync() ?? '';
   
@@ -210,7 +214,6 @@ Future<void> createAppointment() async {
     print('❌ Failed to create appointment');
   }
 }
-
 // =======================
 // View Appointments
 // =======================

@@ -1,7 +1,7 @@
 import 'db_helper.dart';
 
 class AppointmentOperations {
-  // ✅ Insert a new appointment
+ 
   static Future<bool> insertAppointment({
     required int patientId,
     required int doctorId,
@@ -63,7 +63,6 @@ class AppointmentOperations {
   }
 }
 
-  // Delete an appointment by ID
   static Future<bool> deleteAppointment(int appointmentId) async {
     try {
       final db = await DbHelper.connect();

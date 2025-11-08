@@ -4,7 +4,7 @@ import '../utils/screen_utils.dart';
 
 Future<void> staffMenu() async {
   while (true) {
-    clearScreenSimple();  // ← Clear screen
+    clearScreenSimple();  
     print('\n===== STAFF MANAGEMENT =====');
     print('1 - Add Doctor');
     print('2 - Add Nurse');

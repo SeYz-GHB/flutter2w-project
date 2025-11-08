@@ -42,9 +42,7 @@ Future<void> appointmentMenu() async {
   }
 }
 
-// =======================
-// Helper: Format DateTime to "YYYY-MM-DD HH:MM"
-// =======================
+
 String formatAppointmentDate(DateTime date) {
   return '${date.year}-'
          '${date.month.toString().padLeft(2, '0')}-'
@@ -56,7 +54,7 @@ String formatAppointmentDate(DateTime date) {
 
 DateTime? parseAppointmentDate(String input) {
   try {
-    // Support formats: "YYYY-MM-DD HH:MM" or "YYYY-MM-DD"
+  
     List<String> parts = input.trim().split(' ');
     List<String> dateParts = parts[0].split('-');
     
@@ -69,7 +67,7 @@ DateTime? parseAppointmentDate(String input) {
     int hour = 0;
     int minute = 0;
     
-    // If time is provided
+  
     if (parts.length > 1) {
       List<String> timeParts = parts[1].split(':');
       if (timeParts.length >= 2) {
